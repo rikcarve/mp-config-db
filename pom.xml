@@ -6,7 +6,7 @@
     <artifactId>mp-config-db</artifactId>
     <version>0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
-    <name>mp-config-consul</name>
+    <name>mp-config-db</name>
     <description>ConfigurationSource for eclipse microprofile config based on a database</description>
     <url>https://github.com/rikcarve/mp-config-db</url>
 

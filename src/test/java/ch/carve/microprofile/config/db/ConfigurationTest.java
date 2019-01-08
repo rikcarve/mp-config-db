@@ -14,10 +14,10 @@ public class ConfigurationTest {
 
     @Test
     public void testGetValidity_fromSys() throws Exception {
-        System.setProperty("consul.configsource.validity", "10");
+        System.setProperty("mp-config-db.validity", "10");
         Configuration config = new Configuration();
         assertEquals(10000, config.getValidity());
-        System.clearProperty("consul.configsource.validity");
+        System.clearProperty("mp-config-db.validity");
     }
 
     @Test
