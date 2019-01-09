@@ -10,17 +10,17 @@ import org.slf4j.LoggerFactory;
 
 public class DatasourceConfigSource implements ConfigSource {
 
-    
     private static final Logger logger = LoggerFactory.getLogger(DatasourceConfigSource.class);
 
     Configuration config = new Configuration();
     private Map<String, TimedEntry> cache = new ConcurrentHashMap<>();
-    Repository repository = new Repository(config);
+    Repository repository = null;
 
     @Override
     public Map<String, String> getProperties() {
         return cache.entrySet()
                 .stream()
+                .filter(e -> e.getValue().getValue() != null)
                 .collect(Collectors.toMap(
                         e -> e.getKey(),
                         e -> e.getValue().getValue()));
@@ -28,6 +28,10 @@ public class DatasourceConfigSource implements ConfigSource {
 
     @Override
     public String getValue(String propertyName) {
+        if (repository == null) {
+            // late initialization is needed because of the EE datasource.
+            repository = new Repository(config);
+        }
         TimedEntry entry = cache.get(propertyName);
         if (entry == null || entry.isExpired()) {
             logger.debug("load {} from db", propertyName);

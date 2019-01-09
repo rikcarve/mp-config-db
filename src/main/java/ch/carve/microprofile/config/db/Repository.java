@@ -47,7 +47,7 @@ public class Repository {
         try {
             return (DataSource) InitialContext.doLookup(jndi);
         } catch (NamingException e) {
-            logger.debug("Could not get datasource: {}", e.getMessage());
+            logger.warn("Could not get datasource: {}", e.getMessage());
             return null;
         }
     }
