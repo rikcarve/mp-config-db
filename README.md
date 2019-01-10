@@ -25,8 +25,12 @@ Currently there are 5 values you can configure, either through Java system prope
 * **mp-config-db.valueColumn** name of the column containing the value, default value is "value"
 * **mp-config-db.validity** how long to cache values (in seconds), default is 30s
 
+## Hint
+Use memory config source from [microprofile-extensions](https://github.com/microprofile-extensions/config-ext/tree/master/configsource-memory) to get a REST interface and the possibility to change values on the fly (in-memory)
 
 ## Links
 * https://microprofile.io/project/eclipse/microprofile-config
 * https://github.com/rikcarve/consulkv-maven-plugin
 * https://github.com/rikcarve/mp-config-consul
+* https://github.com/microprofile-extensions
+
