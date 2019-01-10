@@ -3,7 +3,7 @@
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/ch.carve/mp-config-db/badge.svg?style=flat-square)](https://maven-badges.herokuapp.com/maven-central/ch.carve/mp-config-db/)
 
 # mp-config-db
-A eclipse microprofile config (1.2) extension which uses [Consul](https://www.consul.io/) as source.
+A eclipse microprofile config (1.2) extension which uses a database as source.
 
 ## Overview
 The eclipse microprofile config framework is a simple yet powerful configuration framework for Java EE. But most implementations only provide the system/env properties or property files as configuration source. This small library provides an ConfigSource implementation which reads the values from the default datasource. For performance reasons, the config values are cached.

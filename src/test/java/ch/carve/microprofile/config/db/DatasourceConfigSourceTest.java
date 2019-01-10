@@ -32,7 +32,14 @@ class DatasourceConfigSourceTest {
         configSource.getValue("test");
         assertTrue(configSource.getProperties().isEmpty());
     }
-    
+
+    @Test
+    public void testGetProperties_one() {
+        when(configSource.repository.getConfigValue(anyString())).thenReturn("123");
+        configSource.getValue("test");
+        assertEquals(1, configSource.getProperties().size());
+    }
+
     @Test
     public void testGetValue() {
         when(configSource.repository.getConfigValue(anyString())).thenReturn("123");
