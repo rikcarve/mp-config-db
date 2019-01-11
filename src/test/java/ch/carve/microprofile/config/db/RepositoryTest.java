@@ -32,6 +32,12 @@ class RepositoryTest {
     }
 
     @Test
+    void testGetConfigValue_no_stmt() throws SQLException {
+        Repository repository = new Repository(new Configuration());
+        assertNull(repository.getConfigValue("test"));
+    }
+
+    @Test
     void testGetConfigValue() throws SQLException {
         Repository repository = new Repository(new Configuration());
         repository.selectOne = mock(PreparedStatement.class);
@@ -40,6 +46,20 @@ class RepositoryTest {
         when(rs.getString(1)).thenReturn("value");
         when(repository.selectOne.executeQuery()).thenReturn(rs);
         assertEquals("value", repository.getConfigValue("test"));
+    }
+
+    @Test
+    void testGetAllConfigValues_no_stmt() throws SQLException {
+        Repository repository = new Repository(new Configuration());
+        assertEquals(0, repository.getAllConfigValues().size());
+    }
+
+    @Test
+    void testGetAllConfigValues_exception() throws SQLException {
+        Repository repository = new Repository(new Configuration());
+        repository.selectAll = mock(PreparedStatement.class);
+        when(repository.selectAll.executeQuery()).thenThrow(SQLException.class);
+        assertEquals(0, repository.getAllConfigValues().size());
     }
 
     @Test

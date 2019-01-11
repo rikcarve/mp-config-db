@@ -24,6 +24,11 @@ class DatasourceConfigSourceTest {
     }
 
     @Test
+    void testGetOrdinal() {
+        assertTrue(configSource.getOrdinal() > 100);
+    }
+
+    @Test
     void testGetProperties_empty() {
         assertTrue(configSource.getProperties().isEmpty());
     }
