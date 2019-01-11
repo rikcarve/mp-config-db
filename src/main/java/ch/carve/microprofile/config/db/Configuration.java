@@ -6,7 +6,7 @@ public class Configuration {
     private long validity = Long.valueOf(getEnvOrSystemProperty("mp-config-db.validity", "30")) * 1000L;
     private String datasourceJndi = getEnvOrSystemProperty("mp-config-db.datasource", "java:comp/DefaultDataSource");
     private String table = getEnvOrSystemProperty("mp-config-db.table", "configuration");
-    private String keyColumn = getEnvOrSystemProperty("mp-config-db.keyColumn", "name");
+    private String keyColumn = getEnvOrSystemProperty("mp-config-db.keyColumn", "key");
     private String valueColumn = getEnvOrSystemProperty("mp-config-db.valueColumn", "value");
 
     public String getDatasourceJndi() {
