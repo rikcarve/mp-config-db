@@ -20,7 +20,7 @@ The eclipse microprofile config framework is a simple yet powerful configuration
 ## Configuration
 Currently there are 5 values you can configure, either through Java system properties or environment variables:
 * **mp-config-db.datasource** override default datasource by setting JNDI name of the datasource
-* **mp-config-db.table** table name for configuration records, default value is "configurations"
+* **mp-config-db.table** table name for configuration records, default value is "configuration"
 * **mp-config-db.keyColumn** name of the column containing the key, default value is "name"
 * **mp-config-db.valueColumn** name of the column containing the value, default value is "value"
 * **mp-config-db.validity** how long to cache values (in seconds), default is 30s

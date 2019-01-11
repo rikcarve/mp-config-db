@@ -23,7 +23,7 @@ public class ConfigurationTest {
     @Test
     public void testGetTable() throws Exception {
         Configuration config = new Configuration();
-        assertEquals("configurations", config.getTable());
+        assertEquals("configuration", config.getTable());
     }
 
 }
