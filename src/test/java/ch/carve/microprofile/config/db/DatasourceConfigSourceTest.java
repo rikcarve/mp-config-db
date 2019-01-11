@@ -8,6 +8,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.Collections;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -35,7 +37,7 @@ class DatasourceConfigSourceTest {
 
     @Test
     public void testGetProperties_one() {
-        when(configSource.repository.getConfigValue(anyString())).thenReturn("123");
+        when(configSource.repository.getAllConfigValues()).thenReturn(Collections.singletonMap("test", "value"));
         configSource.getValue("test");
         assertEquals(1, configSource.getProperties().size());
     }

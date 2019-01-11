@@ -2,7 +2,6 @@ package ch.carve.microprofile.config.db;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 import org.eclipse.microprofile.config.spi.ConfigSource;
 import org.slf4j.Logger;
@@ -18,12 +17,11 @@ public class DatasourceConfigSource implements ConfigSource {
 
     @Override
     public Map<String, String> getProperties() {
-        return cache.entrySet()
-                .stream()
-                .filter(e -> e.getValue().getValue() != null)
-                .collect(Collectors.toMap(
-                        e -> e.getKey(),
-                        e -> e.getValue().getValue()));
+        if (repository == null) {
+            // late initialization is needed because of the EE datasource.
+            repository = new Repository(config);
+        }
+        return repository.getAllConfigValues();
     }
 
     @Override

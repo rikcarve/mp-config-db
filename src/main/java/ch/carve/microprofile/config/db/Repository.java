@@ -4,6 +4,8 @@ import java.lang.invoke.MethodHandles;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -14,25 +16,43 @@ import org.slf4j.LoggerFactory;
 
 public class Repository {
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-    PreparedStatement statement = null;
+    PreparedStatement selectOne = null;
+    PreparedStatement selectAll = null;
     
     public Repository(Configuration config) {
         DataSource datasource = getDatasource(config.getDatasourceJndi());
         if (datasource != null) {
-            String query = "select value from " + config.getTable() + " where " + config.getKeyColumn() + " = ?";
+            String queryOne = "select " + config.getValueColumn() + " from " + config.getTable() + " where " + config.getKeyColumn() + " = ?";
+            String queryAll = "select " + config.getKeyColumn() + ", " + config.getValueColumn() + " from " + config.getTable();
             try {
-                statement = datasource.getConnection().prepareStatement(query);
+                selectOne = datasource.getConnection().prepareStatement(queryOne);
+                selectAll = datasource.getConnection().prepareStatement(queryAll);
             } catch (SQLException e) {
                 logger.debug("Configuration query could not be prepared: {}", e.getMessage());
             }
         }
     }
     
-    public String getConfigValue(String key) {
-        if (statement != null) {
+    public Map<String, String> getAllConfigValues() {
+        Map<String, String> result = new HashMap<>();
+        if (selectAll != null) {
             try {
-                statement.setString(1, key);
-                ResultSet rs = statement.executeQuery();
+                ResultSet rs = selectAll.executeQuery();
+                while (rs.next()) {
+                    result.put(rs.getString(1), rs.getString(2));
+                }
+            } catch (SQLException e) {
+                logger.debug("query for config values failed: {}", e.getMessage());
+            }
+        }
+        return result;
+    }
+    
+    public String getConfigValue(String key) {
+        if (selectOne != null) {
+            try {
+                selectOne.setString(1, key);
+                ResultSet rs = selectOne.executeQuery();
                 if (rs.next()) {
                     return rs.getString(1);
                 }
