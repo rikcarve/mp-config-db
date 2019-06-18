@@ -21,6 +21,7 @@ class DatasourceConfigSourceTest {
     public void init() {
         configSource = new DatasourceConfigSource();
         configSource.repository = mock(Repository.class);
+        configSource.validity = 30000L;
     }
 
     @Test
@@ -52,7 +53,7 @@ class DatasourceConfigSourceTest {
         when(configSource.repository.getConfigValue(anyString())).thenReturn("123");
         assertEquals("123", configSource.getValue("test"));
     }
-    
+
     @Test
     public void testGetValue_cache() {
         when(configSource.repository.getConfigValue(anyString())).thenReturn("123");

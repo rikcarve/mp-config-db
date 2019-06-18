@@ -1,6 +1,5 @@
 package ch.carve.microprofile.config.db;
 
-import java.lang.invoke.MethodHandles;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -11,29 +10,40 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.eclipse.microprofile.config.Config;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class Repository {
-    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
+    private static final String KEY_PREFIX = "configsource.db.";
+    private static final String KEY_DATASOURCE = KEY_PREFIX + "datasource";
+    private static final String KEY_TABLE = KEY_PREFIX + "table";
+    private static final String KEY_KEY_COLUMN = KEY_PREFIX + "key-column";
+    private static final String KEY_VALUE_COLUMN = KEY_PREFIX + "value-column";
+
     PreparedStatement selectOne = null;
     PreparedStatement selectAll = null;
-    
-    public Repository(Configuration config) {
-        DataSource datasource = getDatasource(config.getDatasourceJndi());
+
+    public Repository(Config config) {
+        DataSource datasource = getDatasource(config.getOptionalValue(KEY_DATASOURCE, String.class).orElse("java:comp/DefaultDataSource"));
+        String table = config.getOptionalValue(KEY_TABLE, String.class).orElse("configuration");
+        String keyColumn = config.getOptionalValue(KEY_KEY_COLUMN, String.class).orElse("key");
+        String valueColumn = config.getOptionalValue(KEY_VALUE_COLUMN, String.class).orElse("value");
         if (datasource != null) {
-            String queryOne = "select " + config.getValueColumn() + " from " + config.getTable() + " where " + config.getKeyColumn() + " = ?";
-            String queryAll = "select " + config.getKeyColumn() + ", " + config.getValueColumn() + " from " + config.getTable();
+            String queryOne = "select " + valueColumn + " from " + table + " where " + keyColumn + " = ?";
+            String queryAll = "select " + keyColumn + ", " + valueColumn + " from " + table;
             try {
                 selectOne = datasource.getConnection().prepareStatement(queryOne);
                 selectAll = datasource.getConnection().prepareStatement(queryAll);
             } catch (SQLException e) {
-                logger.debug("Configuration query could not be prepared: {}", e.getMessage());
+                log.debug("Configuration query could not be prepared: " + e.getMessage());
             }
         }
     }
-    
-    public Map<String, String> getAllConfigValues() {
+
+    public synchronized Map<String, String> getAllConfigValues() {
         Map<String, String> result = new HashMap<>();
         if (selectAll != null) {
             try {
@@ -42,13 +52,13 @@ public class Repository {
                     result.put(rs.getString(1), rs.getString(2));
                 }
             } catch (SQLException e) {
-                logger.debug("query for config values failed: {}", e.getMessage());
+                log.debug("query for config values failed: " + e.getMessage());
             }
         }
         return result;
     }
-    
-    public String getConfigValue(String key) {
+
+    public synchronized String getConfigValue(String key) {
         if (selectOne != null) {
             try {
                 selectOne.setString(1, key);
@@ -57,17 +67,17 @@ public class Repository {
                     return rs.getString(1);
                 }
             } catch (SQLException e) {
-                logger.debug("query for config value failed: {}", e.getMessage());
+                log.debug("query for config value failed: " + e.getMessage());
             }
         }
         return null;
     }
-    
+
     private DataSource getDatasource(String jndi) {
         try {
             return (DataSource) InitialContext.doLookup(jndi);
         } catch (NamingException e) {
-            logger.warn("Could not get datasource: {}", e.getMessage());
+            log.warn("Could not get datasource: " + e.getMessage());
             return null;
         }
     }
