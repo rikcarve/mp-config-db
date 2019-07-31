@@ -26,8 +26,6 @@ public class Repository {
     PreparedStatement selectOne = null;
     PreparedStatement selectAll = null;
 
-    private Config config;
-
     public Repository(Config config) {
         DataSource datasource = getDatasource(config.getOptionalValue(KEY_DATASOURCE, String.class).orElse("java:comp/DefaultDataSource"));
         String table = config.getOptionalValue(KEY_TABLE, String.class).orElse("configuration");
