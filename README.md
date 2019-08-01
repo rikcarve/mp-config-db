@@ -13,7 +13,7 @@ The eclipse microprofile config framework is a simple yet powerful configuration
         <dependency>
             <groupId>ch.carve</groupId>
             <artifactId>mp-config-db</artifactId>
-            <version>0.3</version>
+            <version>0.4</version>
         </dependency>
 ```
 
@@ -21,8 +21,8 @@ The eclipse microprofile config framework is a simple yet powerful configuration
 Currently there are 5 values you can configure, either through Java system properties or environment variables:
 * **configsource.db.datasource** override default datasource by setting JNDI name of the datasource
 * **configsource.db.table** table name for configuration records, default value is "configuration"
-* **configsource.db.keyColumn** name of the column containing the key, default value is "key"
-* **configsource.db.valueColumn** name of the column containing the value, default value is "value"
+* **configsource.db.key-column** name of the column containing the key, default value is "key"
+* **configsource.db.value-column** name of the column containing the value, default value is "value"
 * **configsource.db.validity** how long to cache values (in seconds), default is 30s
 
 ## Hint
