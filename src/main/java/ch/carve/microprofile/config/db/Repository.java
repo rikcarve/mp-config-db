@@ -38,36 +38,28 @@ public class Repository {
                 selectOne = datasource.getConnection().prepareStatement(queryOne);
                 selectAll = datasource.getConnection().prepareStatement(queryAll);
             } catch (SQLException e) {
-                log.debug("Configuration query could not be prepared: " + e.getMessage());
+                log.info("Configuration query could not be prepared: " + e.getMessage());
             }
         }
     }
 
-    public synchronized Map<String, String> getAllConfigValues() {
+    public synchronized Map<String, String> getAllConfigValues() throws SQLException {
         Map<String, String> result = new HashMap<>();
         if (selectAll != null) {
-            try {
-                ResultSet rs = selectAll.executeQuery();
-                while (rs.next()) {
-                    result.put(rs.getString(1), rs.getString(2));
-                }
-            } catch (SQLException e) {
-                log.debug("query for config values failed: " + e.getMessage());
+            ResultSet rs = selectAll.executeQuery();
+            while (rs.next()) {
+                result.put(rs.getString(1), rs.getString(2));
             }
         }
         return result;
     }
 
-    public synchronized String getConfigValue(String key) {
+    public synchronized String getConfigValue(String key) throws SQLException {
         if (selectOne != null) {
-            try {
-                selectOne.setString(1, key);
-                ResultSet rs = selectOne.executeQuery();
-                if (rs.next()) {
-                    return rs.getString(1);
-                }
-            } catch (SQLException e) {
-                log.debug("query for config value failed: " + e.getMessage());
+            selectOne.setString(1, key);
+            ResultSet rs = selectOne.executeQuery();
+            if (rs.next()) {
+                return rs.getString(1);
             }
         }
         return null;

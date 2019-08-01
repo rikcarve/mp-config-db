@@ -1,5 +1,7 @@
 package ch.carve.microprofile.config.db;
 
+import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -27,7 +29,13 @@ public class DatasourceConfigSource implements ConfigSource {
     @Override
     public Map<String, String> getProperties() {
         initRepository();
-        return repository.getAllConfigValues();
+        try {
+            return repository.getAllConfigValues();
+        } catch (SQLException e) {
+            log.info("query failed: " + e.getMessage());
+            clearRepository();
+        }
+        return new HashMap<>();
     }
 
     @Override
@@ -38,11 +46,17 @@ public class DatasourceConfigSource implements ConfigSource {
         TimedEntry entry = cache.get(propertyName);
         if (entry == null || entry.isExpired()) {
             log.debug("load {} from db", propertyName);
-            String value = repository.getConfigValue(propertyName);
-            cache.put(propertyName, new TimedEntry(value));
-            return value;
+            try {
+                String value = repository.getConfigValue(propertyName);
+                cache.put(propertyName, new TimedEntry(value));
+                return value;
+            } catch (SQLException e) {
+                log.info("query failed: " + e.getMessage());
+                clearRepository();
+            }
         }
-        return entry.getValue();
+        // if the entry was never cached, then it will be null
+        return entry != null ? entry.getValue() : null;
     }
 
     @Override
@@ -60,6 +74,10 @@ public class DatasourceConfigSource implements ConfigSource {
             // late initialization is needed because of the EE datasource.
             repository = new Repository(config);
         }
+    }
+
+    void clearRepository() {
+        repository = null;
     }
 
     private void initValidity() {
