@@ -3,7 +3,6 @@ package ch.carve.microprofile.config.db;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.config.spi.ConfigProviderResolver;
@@ -17,10 +16,8 @@ public class DatasourceConfigSource implements ConfigSource {
     private static final String VALIDITY_KEY = "configsource.db.validity";
 
     private Config config;
-    private Map<String, TimedEntry> cache = new ConcurrentHashMap<>();
     Repository repository = null;
-
-    Long validity;
+    ExpiringMap<String, String> cache = null;
 
     public DatasourceConfigSource() {
         config = createConfig();
@@ -41,22 +38,9 @@ public class DatasourceConfigSource implements ConfigSource {
     @Override
     public String getValue(String propertyName) {
         initRepository();
-        initValidity();
+        initCache();
 
-        TimedEntry entry = cache.get(propertyName);
-        if (entry == null || entry.isExpired()) {
-            log.debug("load {} from db", propertyName);
-            try {
-                String value = repository.getConfigValue(propertyName);
-                cache.put(propertyName, new TimedEntry(value));
-                return value;
-            } catch (SQLException e) {
-                log.info("query failed: " + e.getMessage());
-                clearRepository();
-            }
-        }
-        // if the entry was never cached, then it will be null
-        return entry != null ? entry.getValue() : null;
+        return cache.getOrCompute(propertyName, p -> repository.getConfigValue(p), () -> clearRepository());
     }
 
     @Override
@@ -66,7 +50,7 @@ public class DatasourceConfigSource implements ConfigSource {
 
     @Override
     public int getOrdinal() {
-        return 120;
+        return 450;
     }
 
     private void initRepository() {
@@ -80,9 +64,10 @@ public class DatasourceConfigSource implements ConfigSource {
         repository = null;
     }
 
-    private void initValidity() {
-        if (validity == null) {
-            validity = config.getOptionalValue(VALIDITY_KEY, Long.class).orElse(30000L);
+    private void initCache() {
+        if (cache == null) {
+            long validity = config.getOptionalValue(VALIDITY_KEY, Long.class).orElse(30000L);
+            cache = new ExpiringMap<>(validity);
         }
     }
 
@@ -93,21 +78,4 @@ public class DatasourceConfigSource implements ConfigSource {
                 .build();
     }
 
-    class TimedEntry {
-        private final String value;
-        private final long timestamp;
-
-        public TimedEntry(String value) {
-            this.value = value;
-            this.timestamp = System.currentTimeMillis();
-        }
-
-        public String getValue() {
-            return value;
-        }
-
-        public boolean isExpired() {
-            return (timestamp + validity) < System.currentTimeMillis();
-        }
-    }
 }

@@ -1,6 +1,8 @@
 package ch.carve.microprofile.config.db;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -22,7 +24,7 @@ class DatasourceConfigSourceTest {
     public void init() {
         configSource = Mockito.spy(new DatasourceConfigSource());
         configSource.repository = mock(Repository.class);
-        configSource.validity = 30000L;
+        configSource.cache = new ExpiringMap<String, String>(30000);
     }
 
     @Test
@@ -70,12 +72,12 @@ class DatasourceConfigSourceTest {
         verify(configSource, times(1)).clearRepository();
     }
 
-
     @Test
     public void testGetValue_exception_cache() throws Exception {
 
-         // negative value, otherwise two serial "getValue" will have the same timestamp and the entry is not yet expired.
-        configSource.validity = -5L;
+        // negative value, otherwise two serial "getValue" will have the same timestamp
+        // and the entry is not yet expired.
+        configSource.cache = new ExpiringMap<String, String>(-5);
 
         when(configSource.repository.getConfigValue(anyString())).thenReturn("123");
         assertEquals("123", configSource.getValue("test"));
@@ -84,6 +86,5 @@ class DatasourceConfigSourceTest {
         verify(configSource, times(1)).clearRepository();
 
     }
-
 
 }
