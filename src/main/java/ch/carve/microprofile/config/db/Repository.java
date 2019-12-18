@@ -61,6 +61,8 @@ public class Repository {
             if (rs.next()) {
                 return rs.getString(1);
             }
+        } else {
+            throw new SQLException("datasource not initialized");
         }
         return null;
     }

@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 public class DatasourceConfigSource implements ConfigSource {
 
     private static final String VALIDITY_KEY = "configsource.db.validity";
+    private static final String CONFIGSOURCE_ORDINAL_KEY = "configsource.db.ordinal";
 
     private Config config;
     Repository repository = null;
@@ -50,7 +51,7 @@ public class DatasourceConfigSource implements ConfigSource {
 
     @Override
     public int getOrdinal() {
-        return 450;
+        return config.getOptionalValue(CONFIGSOURCE_ORDINAL_KEY, Integer.class).orElse(450);
     }
 
     private void initRepository() {
