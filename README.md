@@ -26,7 +26,7 @@ Currently there are 5 values you can configure, either through Java system prope
 * **configsource.db.validity** how long to cache values (in seconds), default is 30s
 
 ## Ordinal
-Config sources have priorities called ordinal. This config source has ordinal 450, but can be overriden with setting 'configsource.db.ordinal' in one of the default config sources (NOT in this source like specified in the spec, as the datasource is not yet ready when getOrdinal() is called).
+Config sources have priorities called ordinal. This config source has ordinal 450, but can be overriden with setting '**configsource.db.ordinal**' in one of the default config sources (NOT in this source like specified in the spec, as the datasource is not yet ready when getOrdinal() is called).
 
 ## Hint
 Use memory config source from [microprofile-extensions](https://github.com/microprofile-extensions/config-ext/tree/master/configsource-memory) to get a REST interface and the possibility to change values on the fly (in-memory)
