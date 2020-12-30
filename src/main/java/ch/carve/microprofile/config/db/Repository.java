@@ -46,9 +46,10 @@ public class Repository {
     public synchronized Map<String, String> getAllConfigValues() throws SQLException {
         Map<String, String> result = new HashMap<>();
         if (selectAll != null) {
-            ResultSet rs = selectAll.executeQuery();
-            while (rs.next()) {
-                result.put(rs.getString(1), rs.getString(2));
+            try (ResultSet rs = selectAll.executeQuery()) {
+                while (rs.next()) {
+                    result.put(rs.getString(1), rs.getString(2));
+                }
             }
         }
         return result;
@@ -57,9 +58,10 @@ public class Repository {
     public synchronized String getConfigValue(String key) throws SQLException {
         if (selectOne != null) {
             selectOne.setString(1, key);
-            ResultSet rs = selectOne.executeQuery();
-            if (rs.next()) {
-                return rs.getString(1);
+            try (ResultSet rs = selectOne.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getString(1);
+                }
             }
         } else {
             throw new SQLException("datasource not initialized");
