@@ -13,7 +13,7 @@ The eclipse microprofile config framework is a simple yet powerful configuration
         <dependency>
             <groupId>ch.carve</groupId>
             <artifactId>mp-config-db</artifactId>
-            <version>0.6</version>
+            <version>0.7</version>
         </dependency>
 ```
 
