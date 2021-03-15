@@ -3,7 +3,11 @@
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/ch.carve/mp-config-db/badge.svg?style=flat-square)](https://maven-badges.herokuapp.com/maven-central/ch.carve/mp-config-db/)
 
 # mp-config-db
-A eclipse microprofile config (1.3) extension which uses a database as source.
+A eclipse microprofile config extension which uses a database as source.
+
+## Versions
+0.7 -> Microprofile config 1.4 \
+0.8 -> Microprofile config 2.0
 
 ## Overview
 The eclipse microprofile config framework is a simple yet powerful configuration framework for Java EE. But most implementations only provide the system/env properties or property files as configuration source. This small library provides an ConfigSource implementation which reads the values from the default datasource. For performance reasons, the config values are cached.
@@ -13,7 +17,7 @@ The eclipse microprofile config framework is a simple yet powerful configuration
         <dependency>
             <groupId>ch.carve</groupId>
             <artifactId>mp-config-db</artifactId>
-            <version>0.7</version>
+            <version>0.8</version>
         </dependency>
 ```
 

@@ -3,6 +3,7 @@ package ch.carve.microprofile.config.db;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.config.spi.ConfigProviderResolver;
@@ -34,6 +35,11 @@ public class DatasourceConfigSource implements ConfigSource {
             clearRepository();
         }
         return new HashMap<>();
+    }
+
+    @Override
+    public Set<String> getPropertyNames() {
+        return getProperties().keySet();
     }
 
     @Override
